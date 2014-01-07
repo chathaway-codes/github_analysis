@@ -9,7 +9,7 @@ from github_analysis.models import GithubUser, Repository, Contribution
 
 def get_start_at():
     if Repository.objects.count() > 0:
-        return Repository.objects.order_by('-id').all()[0].id
+        return Repository.objects.order_by('-id').all()[0].id-1
     return 0
 
 class Command(BaseCommand):
@@ -43,7 +43,10 @@ class Command(BaseCommand):
 
         user = self.save_user(g_repo.owner)
 
-        repo = Repository()
+        try:
+            repo = Repository.objects.get(pk=g_repo.id)
+        except ObjectDoesNotExist:
+            repo = Repository()
         for f in repo._meta.get_all_field_names():
             if f == 'owner':
                 setattr(repo, f, user)
