@@ -6,4 +6,5 @@ eclipse/
 *.bak
 *.pyc
 *.sqlite3
+local_settings.py
 python/
