@@ -63,7 +63,7 @@ class Command(BaseCommand):
         stats = g_repo.get_stats_contributors()
         if stats == None:
             return
-        for u in stats:
+        for u in g_repo.get_stats_contributors():
             user = self.save_user(u.author)
 
             a,d,c = 0,0,0
