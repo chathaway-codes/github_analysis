@@ -57,11 +57,22 @@ class Command(BaseCommand):
         self.save_contributions(repo, g_repo)
 
     def save_contributions(self, repo, g_repo):
-        for u in g_repo.get_stats_contributors():
+        stats = g_repo.get_stats_contributors()
+        if stats == None:
+            return
+        for u in stats:
             user = self.save_user(u.author)
 
+            a,d,c = 0,0,0
+
+            for w in u.weeks:
+                a += w.a
+                d += w.d
+                c += w.c
+
             self.stdout.write("Saving contribution to %s from %s" % (repo, user))
-            Contribution(user=user, repo=repo, total_contributions=u.total).save()
+            Contribution(user=user, repo=repo, total_contributions=u.total,
+                        total_changed=c, total_added=a, total_deleted=d).save()
 
     def save_user(self, g_user):
         try:
