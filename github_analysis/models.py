@@ -8,9 +8,9 @@ from django.conf import settings
 class Repository(models.Model):
     id = models.IntegerField(primary_key=True)
     owner = models.ForeignKey('github_analysis.GithubUser')
-    name = models.CharField(max_length=255)
-    full_name = models.CharField(max_length=255)
-    description = models.CharField(max_length=255)
+    name = models.CharField(max_length=1024)
+    full_name = models.CharField(max_length=1024)
+    description = models.CharField(max_length=1024)
     private = models.BooleanField(default=False)
     fork = models.BooleanField(default=False)
     url = models.URLField()
@@ -20,9 +20,9 @@ class Repository(models.Model):
         return self.full_name
 
 class GithubUser(models.Model):
-    login = models.CharField(max_length=255)
+    login = models.CharField(max_length=1024)
     id = models.IntegerField(primary_key=True)
-    gravatar_id = models.CharField(max_length=255, null=True)
+    gravatar_id = models.CharField(max_length=1024, null=True)
     url = models.URLField()
     html_url = models.URLField()
     followers_url = models.URLField()
