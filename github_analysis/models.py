@@ -42,6 +42,3 @@ class Contribution(models.Model):
     repo = models.ForeignKey('github_analysis.Repository')
 
     total_contributions = models.IntegerField()
-    total_added = models.IntegerField()
-    total_deleted = models.IntegerField()
-    total_changed = models.IntegerField()

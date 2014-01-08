@@ -60,22 +60,17 @@ class Command(BaseCommand):
         self.save_contributions(repo, g_repo)
 
     def save_contributions(self, repo, g_repo):
-        stats = g_repo.get_stats_contributors()
+        stats = g_repo.get_contributors()
         if stats == None:
             return
-        for u in g_repo.get_stats_contributors():
-            user = self.save_user(u.author)
+        for u in stats:
+            user = self.save_user(u)
 
-            a,d,c = 0,0,0
-
-            for w in u.weeks:
-                a += w.a
-                d += w.d
-                c += w.c
+            if Contribution.objects.filter(user=user, repo=repo).count() != 0:
+                return
 
             self.stdout.write("Saving contribution to %s from %s" % (repo, user))
-            Contribution(user=user, repo=repo, total_contributions=u.total,
-                        total_changed=c, total_added=a, total_deleted=d).save()
+            Contribution(user=user, repo=repo, total_contributions=u.contributions).save()
 
     def save_user(self, g_user):
         try:
@@ -83,6 +78,8 @@ class Command(BaseCommand):
         except ObjectDoesNotExist:
             user = GithubUser()
             for f in user._meta.get_all_field_names():
+                if f=='contribution' or f=='repository':
+                    continue
                 try:
                     v = getattr(g_user, f)
                     setattr(user, f, v)
