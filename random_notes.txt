@@ -1,0 +1,21 @@
+select a.full_name
+  , a.id, count(*) as total 
+from github_analysis_repository as a 
+inner join github_analysis_contribution as b 
+on (a.id = b.repo_id) 
+group by a.full_name
+  , a.id 
+order by total desc;
+
+select b.total_contributions
+  , count(*)
+from github_analysis_githubuser as a
+inner join github_analysis_contribution as b
+on (a.id = b.user_id)
+inner join github_analysis_repository as c
+on (b.repo_id = c.id)
+where c.id=27
+group by b.total_contributions
+order by b.total_contributions desc
+
+\copy (select a.login, b.total_contributions from github_analysis_githubuser as a inner join github_analysis_contribution as b on (a.id = b.user_id) inner join github_analysis_repository as c on (b.repo_id = c.id) where c.id=27 order by b.total_contributions desc) To '/home/chathaway/output.csv' With Csv
