@@ -10,7 +10,7 @@ class Repository(models.Model):
     owner = models.ForeignKey('github_analysis.GithubUser')
     name = models.CharField(max_length=1024)
     full_name = models.CharField(max_length=1024)
-    description = models.CharField(max_length=1024)
+    description = models.TextField()
     private = models.BooleanField(default=False)
     fork = models.BooleanField(default=False)
     url = models.URLField()
