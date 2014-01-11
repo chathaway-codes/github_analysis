@@ -15,6 +15,12 @@ class Repository(models.Model):
     fork = models.BooleanField(default=False)
     url = models.URLField()
     html_url = models.URLField()
+	
+	def save(self):
+        if not self.description:
+            self.description = " "
+        super(Repository, self).save()
+
 
     def __unicode__(self):
         return self.full_name
