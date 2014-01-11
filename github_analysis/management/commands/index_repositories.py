@@ -3,7 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from optparse import make_option
 from github import Github
-import json
+import time
 
 from github_analysis.models import GithubUser, Repository, Contribution
 
@@ -34,9 +34,25 @@ class Command(BaseCommand):
         self.current = 0
 
         self.g = g = Github(settings.GITHUB_TOKEN)
+        prev_time = time.time()
+        prev_api = g.get_rate_limit().rate.remaining
+
+        total_avg_api_calls = 0
+        total_counter = 0
 
         for repo in g.get_repos(since=self.start):
             self.save_repo(repo)
+            cur_time = time.time()
+            time_elapsed = cur_time-prev_time
+            if time_elapsed > 10:
+                cur_api = g.get_rate_limit().rate.remaining
+                avg_api = (prev_api-cur_api)/float(time_elapsed)
+                prev_api = cur_api
+                total_avg_api_calls += avg_api
+                total_counter += 1
+                prev_time = cur_time
+                self.stdout.write("Average API requests/second: %s\n" % (avg_api))
+                self.stdout.write("Total average so far: %s\n" % (total_avg_api_calls/total_counter))
 
     def save_repo(self, g_repo):
         self.stdout.write("Saving repo %s" % g_repo.full_name)
