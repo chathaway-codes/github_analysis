@@ -16,7 +16,7 @@ class Repository(models.Model):
     url = models.URLField()
     html_url = models.URLField()
 	
-	def save(self):
+    def save(self):
         if not self.description:
             self.description = " "
         super(Repository, self).save()
