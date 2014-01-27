@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from optparse import make_option
-from github import Github
+from github import Github, GithubException
 import time
 
 from github_analysis.models import GithubUser, Repository, Contribution
@@ -44,6 +44,7 @@ class Command(BaseCommand):
             self.save_repo(repo)
             cur_time = time.time()
             time_elapsed = cur_time-prev_time
+            self.stdout.write("Here")
             if time_elapsed > 10:
                 cur_api = g.get_rate_limit().rate.remaining
                 avg_api = (prev_api-cur_api)/float(time_elapsed)
@@ -76,6 +77,7 @@ class Command(BaseCommand):
         self.save_contributions(repo, g_repo)
 
     def save_contributions(self, repo, g_repo):
+        self.stdout.write("Saving contributions for repo %s" % repo)
         stats = g_repo.get_contributors()
         if stats == None:
             return
@@ -101,6 +103,10 @@ class Command(BaseCommand):
                     setattr(user, f, v)
                 except AttributeError:
                     self.stderr.write("Warning: failed to find attribute %s in user object" % f)
+                except GithubException:
+                    if f == "following" or f == "followers":
+                        self.stderr.write("Couldn't find follows for user %s" % user)
+                        setattr(user, f, 0)
             self.stdout.write("Saving user %s" % user.login)
             user.save()
         return user
