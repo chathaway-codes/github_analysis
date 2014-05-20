@@ -18,7 +18,7 @@ class Command(BaseCommand):
             type='int',
             dest='start_at',
             default=get_start_at(),
-            help='Which project should we stop at?',
+            help='Which project should we start at?',
         ),
         make_option('--stop-at',
             type='int',

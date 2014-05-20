@@ -28,12 +28,20 @@ class Command(BaseCommand):
         user = GithubUser.objects.get(login=user)
 
         collabs = {}
-        for project in user.contribution_set:
-            for u in project.repository.contribution_set:
-                if u in collabs:
-                    collabs[u] += 1
+        projects = 0
+        for project in user.contribution_set.all():
+            for u in project.repo.contribution_set.all():
+                if u.user == user:
+                    continue
+                if u.user in collabs:
+                    collabs[u.user] += 1
                 else:
-                    collabs[u] = 1
+                    collabs[u.user] = 1
+                projects += 1
+                if projects % 10 == 0:
+                  self.stdout.write(".", ending="")
+                  self.stdout.flush()
 
-        for key,value in collabs:
+        self.stdout.write("%s collaborated with..." % user.__unicode__())
+        for key,value in sorted(collabs.items()):
             self.stdout.write("Collaborated with %s %s times" % (key.__unicode__(), value))

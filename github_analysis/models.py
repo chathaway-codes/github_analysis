@@ -15,6 +15,11 @@ class Repository(models.Model):
     fork = models.BooleanField(default=False)
     url = models.URLField()
     html_url = models.URLField()
+
+    # Note that this isn't perfect; it's possible we'll mess up which 
+    #  repo is the parent. This just indicates a relationship
+    parent = models.ForeignKey('github_analysis.Repository', related_name='children', null=True, blank=True)
+    common_parent = models.IntegerField(null=True, blank=True)
 	
     def save(self):
         if not self.description:
